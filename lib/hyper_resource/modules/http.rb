@@ -129,7 +129,7 @@ class HyperResource
         ## Adding default_attributes to URL query params is not automatic
         uri = URI.parse(self.url || '')
         query = CGI.parse(uri.query || '')
-        str = (self.resource.default_attributes || {}).merge(query)
+        str = URI.encode_www_form((self.resource.default_attributes || {}).merge(query))
         uri.query = str.empty? ? nil : str
         faraday_connection.get(uri.to_s)
       end
