@@ -93,9 +93,7 @@ class HyperResource
     ## Returns hostmasks from our config which match the given url.
     def matching_masks_for_url(url)
       host = URI.parse(url || "").host
-      cfg.keys.filter_map do |h, c|
-        c if host == h || h.nil?
-      end
+      cfg.keys & ["*", host]
     end
 
   private
