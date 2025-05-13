@@ -127,15 +127,11 @@ class HyperResource
       ## Does not parse the response as a `HyperResource` object.
       def get_response
         ## Adding default_attributes to URL query params is not automatic
-        url = FuzzyURL.new(self.url || '')
-        query_str = url[:query] || ''
-        query_attrs = Hash[ query_str.split('&').map{|p| p.split('=')} ]
-        attrs = (self.resource.default_attributes || {}).merge(query_attrs)
-        attrs_str = attrs.inject([]){|pairs,(k,v)| pairs<<"#{k}=#{v}"}.join('&')
-        if attrs_str != ''
-          url = FuzzyURL.new(url.to_hash.merge(:query => attrs_str))
-        end
-        faraday_connection.get(url.to_s)
+        uri = URI.parse(self.url || '')
+        query = CGI.parse(uri.query || '')
+        str = URI.encode_www_form((self.resource.default_attributes || {}).merge(query))
+        uri.query = str.empty? ? nil : str
+        faraday_connection.get(uri.to_s)
       end
 
       ## By default, calls +post+ with the given arguments. Override to

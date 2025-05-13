@@ -1,5 +1,4 @@
 require 'uri'
-require 'fuzzyurl'
 
 class HyperResource
 
@@ -87,26 +86,14 @@ class HyperResource
     ## Sets a key and value pair, using the given URL as the basis of the
     ## hostmask.  Path, query, and fragment are ignored.
     def set_for_url(url, key, value)
-      furl = FuzzyURL.new(url || '*')
-      furl.path = nil
-      furl.query = nil
-      furl.fragment = nil
-      set(furl.to_s, key, value)
+      set(URI.parse(url || "").host, key, value)
     end
 
 
     ## Returns hostmasks from our config which match the given url.
     def matching_masks_for_url(url)
-      url = url.to_s
-      return ['*'] if !url || cfg.keys.count == 1
-      @masks ||= {} ## key = mask string, value = FuzzyURL
-      cfg.keys.each {|key| @masks[key] ||= FuzzyURL.new(key) }
-
-      ## Test for matches, and sort by score.
-      scores = {}
-      cfg.keys.each {|key| scores[key] = @masks[key].match(url) }
-      scores = Hash[ scores.select{|k,v| v} ] # remove nils
-      scores.keys.sort_by{|k| [-scores[k], -k.length]} ## TODO length is cheesy
+      host = URI.parse(url || "").host
+      cfg.keys & ["*", host]
     end
 
   private
