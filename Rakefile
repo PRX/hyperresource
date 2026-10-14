@@ -1,5 +1,6 @@
 require 'bundler/setup'
 require 'rake/testtask'
+require 'standard/rake'
 require './lib/hyper_resource/version'
 
 task :default => [:test]

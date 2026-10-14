@@ -1,0 +1,5 @@
+fix: false
+format: simple
+ignore:
+  - "test/**/*":
+    - Lint/ConstantDefinitionInBlock

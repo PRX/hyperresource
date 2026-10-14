@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'sinatra',   '>= 1.4.0'
   s.add_development_dependency 'rackup'
   s.add_development_dependency 'webrick'
+  s.add_development_dependency 'standard'
   #s.add_development_dependency 'debugger'
 end
 
