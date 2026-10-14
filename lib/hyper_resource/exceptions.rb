@@ -25,7 +25,7 @@ class HyperResource
 
       ## Try to help out with the message
       if body
-        if error = body["error"]
+        if (error = body["error"])
           message = "#{message} (#{error})"
         end
       elsif response

@@ -46,7 +46,7 @@ describe "APIEcosystem" do
       begin
         HyperResource.new(root: "http://localhost:#{PORT_ONE}").get
         HyperResource.new(root: "http://localhost:#{PORT_TWO}").get
-      rescue Exception => e
+      rescue => e
         if ENV["DEBUG"]
           puts "#{e.class}: #{e}" if ENV["DEBUG"]
           puts caller[0..10]

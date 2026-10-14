@@ -235,7 +235,7 @@ class HyperResource
         fc = Faraday.new(fo.merge(url: url))
         fc.headers["User-Agent"] = rsrc.user_agent
         fc.headers.merge!(headers)
-        if ba = auth[:basic]
+        if (ba = auth[:basic])
           if fc.respond_to?(:basic_auth)
             fc.basic_auth(*ba)
           else

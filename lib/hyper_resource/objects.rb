@@ -26,7 +26,7 @@ class HyperResource
     end
 
     # @private
-    def method_missing(method, *args)
+    def method_missing(method, *args) # standard:disable Style/MissingRespondToMissing
       return self[method] if self[method]
       raise NoMethodError, "undefined method `#{method}' for #{inspect}"
     end

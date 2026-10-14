@@ -23,7 +23,7 @@ class HyperResource
 
       ## Extract 'foo' from e.g. 'http://example.com/foo',
       ## 'http://example.com/url#foo', 'somecurie:foo'.
-      if m = rel.match(%r{[:/#](.+)})
+      if (m = rel.match(%r{[:/#](.+)}))
         names << m[1]
       end
 
@@ -45,7 +45,7 @@ class HyperResource
     ## Provides links.somelink(:a => b) to links.somelink.where(:a => b)
     ## expansion.
     # @private
-    def method_missing(method, *args)
+    def method_missing(method, *args) # standard:disable Style/MissingRespondToMissing
       unless self[method]
         raise NoMethodError, "undefined method `#{method}' for #{inspect}"
       end

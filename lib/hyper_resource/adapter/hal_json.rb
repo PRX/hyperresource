@@ -7,7 +7,7 @@ class HyperResource
     ## hypermedia format by implementing the interface defined in
     ## HyperResource::Adapter.
 
-    class HAL_JSON < Adapter
+    class HAL_JSON < Adapter # standard:disable Naming/ClassAndModuleCamelCase
       class << self
         def serialize(object)
           JSON.dump(object)

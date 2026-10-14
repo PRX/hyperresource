@@ -192,7 +192,7 @@ class HyperResource
   ## method_missing will load this resource if not yet loaded, then
   ## attempt to delegate to +attributes+, then +objects+, then +links+.
   ## Override with extreme care.
-  def method_missing(method, *args)
+  def method_missing(method, *args) # standard:disable Style/MissingRespondToMissing
     ## If not loaded, load and retry.
     unless loaded
       return get.send(method, *args)

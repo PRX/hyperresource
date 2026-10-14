@@ -26,7 +26,7 @@ class HyperResource
 
     # @private
     def []=(attr, value)
-      return self[attr] if has_key?(attr.to_s) && self[attr] == value
+      return if has_key?(attr.to_s) && self[attr] == value
       _hr_mark_changed(attr)
       super(attr.to_s, value)
     end
@@ -39,7 +39,7 @@ class HyperResource
     end
 
     # @private
-    def method_missing(method, *args)
+    def method_missing(method, *args) # standard:disable Style/MissingRespondToMissing
       method = method.to_s
       if has_key?(method)
         self[method]

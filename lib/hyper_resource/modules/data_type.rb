@@ -31,13 +31,13 @@ class HyperResource
           namespace_str = sanitize_class_name(namespace.to_s)
           if namespace.is_a?(String)
             ns_class = begin
-              eval(namespace_str)
+              eval(namespace_str) # standard:disable Security/Eval
             rescue
               nil
             end
             if !ns_class
               Object.module_eval("class #{namespace_str} < #{self}; end", __FILE__, __LINE__)
-              ns_class = eval(namespace_str)
+              ns_class = eval(namespace_str) # standard:disable Security/Eval
             end
           end
 
@@ -52,15 +52,15 @@ class HyperResource
           unless ns_class.constants.include?(sanitized_type.to_sym)
             Object.module_eval("class #{data_type_str} < #{namespace_str}; end", __FILE__, __LINE__)
           end
-          eval(data_type_str)
+          eval(data_type_str) # standard:disable Security/Eval
         end
 
         ## Given a body Hash and a response Faraday::Response, detect and
         ## return a string describing this response's data type.
         ## Args are :body and :response.
         def get_data_type(args)
-          type = get_data_type_from_body(args[:body])
-          type ||= get_data_type_from_response(args[:response])
+          get_data_type_from_body(args[:body]) ||
+            get_data_type_from_response(args[:response])
         end
 
         ## Given a Faraday::Response, inspects the Content-type for data
@@ -71,8 +71,8 @@ class HyperResource
         ## Returns nil on failure.
         def get_data_type_from_response(response)
           return nil unless response
-          return nil unless content_type = response["content-type"]
-          return nil unless m = content_type.match(/;\s* type=([0-9A-Za-z:]+)/x)
+          return nil unless (content_type = response["content-type"])
+          return nil unless (m = content_type.match(/;\s* type=([0-9A-Za-z:]+)/x))
           m[1]
         end
 

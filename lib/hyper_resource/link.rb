@@ -109,7 +109,7 @@ class HyperResource
     ## Unrecognized methods invoke an implicit load of the resource pointed
     ## to by this link.  The method call is then repeated on the returned
     ## resource.
-    def method_missing(method, *args)
+    def method_missing(method, *args) # standard:disable Style/MissingRespondToMissing
       send(default_method || :get).send(method, *args)
     end
   end

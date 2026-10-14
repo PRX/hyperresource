@@ -37,7 +37,7 @@ describe HyperResource do
       retries = 5
       begin
         HyperResource.new(root: "http://localhost:#{HR_TEST_PORT}").get
-      rescue Exception => e
+      rescue => e
         if ENV["DEBUG"]
           puts "#{e.class}: #{e}" if ENV["DEBUG"]
           puts caller[0..10]
