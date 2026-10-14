@@ -5,7 +5,7 @@ describe "Embedded Resources" do
 
   it 'supports an array of embedded resources' do
     hyper = TestAPI.new
-    hyper.objects.class.to_s.must_equal 'TestAPI::Objects'
+    _(hyper.objects.class.to_s).must_equal 'TestAPI::Objects'
     body = { "_embedded" => {
                "foo" => [
                  {"_links" => {"self" => {"href" => "http://example.com/"}}}
@@ -13,8 +13,8 @@ describe "Embedded Resources" do
              }
            }
     hyper.adapter.apply(body, hyper)
-    hyper.foo.must_be_instance_of Array
-    hyper.foo.first.href.must_equal 'http://example.com/'
+    _(hyper.foo).must_be_instance_of Array
+    _(hyper.foo.first.href).must_equal 'http://example.com/'
   end
 
   it 'supports a single embedded resource' do
@@ -25,7 +25,7 @@ describe "Embedded Resources" do
              }
            }
     hyper.adapter.apply(body, hyper)
-    hyper.foo.href.must_equal 'http://example.com/'
+    _(hyper.foo.href).must_equal 'http://example.com/'
   end
 
   it 'supports an array of embedded resources with no "_links" property' do
@@ -37,7 +37,7 @@ describe "Embedded Resources" do
              }
            }
     hyper.adapter.apply(body, hyper)
-    hyper.foo.first.href.must_be_nil
+    _(hyper.foo.first.href).must_be_nil
   end
 
   it 'supports an embedded resource with no "_links" property' do
@@ -48,7 +48,7 @@ describe "Embedded Resources" do
              }
            }
     hyper.adapter.apply(body, hyper)
-    hyper.foo.href.must_be_nil
+    _(hyper.foo.href).must_be_nil
   end
 
   it 'supports an array of embedded resources with no "self" link' do
@@ -60,7 +60,7 @@ describe "Embedded Resources" do
              }
            }
     hyper.adapter.apply(body, hyper)
-    hyper.foo.first.href.must_be_nil
+    _(hyper.foo.first.href).must_be_nil
   end
 
   it 'supports an embedded resource with no "self" link' do
@@ -71,6 +71,6 @@ describe "Embedded Resources" do
              }
            }
     hyper.adapter.apply(body, hyper)
-    hyper.foo.href.must_be_nil
+    _(hyper.foo.href).must_be_nil
   end
 end

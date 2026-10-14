@@ -123,10 +123,10 @@ describe HyperResource::Modules::HTTP do
     it 'works at a basic level' do
       hr = DummyAPI.new(:root => 'http://example.com/')
       root = hr.get
-      root.wont_be_nil
-      root.must_be_kind_of HyperResource
-      root.must_be_instance_of DummyAPI::Root
-      root.links.must_be_instance_of DummyAPI::Root::Links
+      _(root).wont_be_nil
+      _(root).must_be_kind_of HyperResource
+      _(root).must_be_instance_of DummyAPI::Root
+      _(root.links).must_be_instance_of DummyAPI::Root::Links
       assert root.links.dummies
     end
 
@@ -136,50 +136,50 @@ describe HyperResource::Modules::HTTP do
         hr.get
         assert false # shouldn't get here
       rescue HyperResource::ClientError => e
-        e.response.wont_be_nil
+        _(e.response).wont_be_nil
       end
     end
 
     it 'Accepts response without a body (example status 204 with nil body)' do
       hr = DummyAPI.new(:root => 'http://example.com/', :href => '204_with_nil_body')
       root = hr.get
-      root.wont_be_nil
-      root.links.must_be_empty
-      root.attributes.must_be_empty
-      root.objects.must_be_empty
-      root.must_be_kind_of HyperResource
-      root.must_be_instance_of DummyAPI
+      _(root).wont_be_nil
+      _(root.links).must_be_empty
+      _(root.attributes).must_be_empty
+      _(root.objects).must_be_empty
+      _(root).must_be_kind_of HyperResource
+      _(root).must_be_instance_of DummyAPI
 
-      root.response.status.must_equal 204
-      root.response.body.must_be_nil
+      _(root.response.status).must_equal 204
+      _(root.response.body).must_be_nil
     end
 
     it 'Accepts response without a body (example status 204 with empty string body)' do
       hr = DummyAPI.new(:root => 'http://example.com/', :href => '204_with_empty_string_body')
       root = hr.get
-      root.wont_be_nil
-      root.links.must_be_empty
-      root.attributes.must_be_empty
-      root.objects.must_be_empty
-      root.must_be_kind_of HyperResource
-      root.must_be_instance_of DummyAPI
+      _(root).wont_be_nil
+      _(root.links).must_be_empty
+      _(root.attributes).must_be_empty
+      _(root.objects).must_be_empty
+      _(root).must_be_kind_of HyperResource
+      _(root).must_be_instance_of DummyAPI
 
-      root.response.status.must_equal 204
-      root.response.body.must_equal('')
+      _(root.response.status).must_equal 204
+      _(root.response.body).must_equal('')
     end
 
     it 'Accepts response without a body (example status 204 with empty hash body)' do
       hr = DummyAPI.new(:root => 'http://example.com/', :href => '204_with_empty_hash_body')
       root = hr.get
-      root.wont_be_nil
-      root.links.must_be_empty
-      root.attributes.must_be_empty
-      root.objects.must_be_empty
-      root.must_be_kind_of HyperResource
-      root.must_be_instance_of DummyAPI
+      _(root).wont_be_nil
+      _(root.links).must_be_empty
+      _(root.attributes).must_be_empty
+      _(root.objects).must_be_empty
+      _(root).must_be_kind_of HyperResource
+      _(root).must_be_instance_of DummyAPI
 
-      root.response.status.must_equal 204
-      root.response.body.must_equal({})
+      _(root.response.status).must_equal 204
+      _(root.response.body).must_equal({})
     end
 
     it 'raises client error and accepts empty body for a status 405' do
@@ -188,8 +188,8 @@ describe HyperResource::Modules::HTTP do
         hr.get
         assert false # shouldn't get here
       rescue HyperResource::ClientError => e
-        e.response.wont_be_nil
-        e.response.status.must_equal 405
+        _(e.response).wont_be_nil
+        _(e.response.status).must_equal 405
       end
     end
 
@@ -199,7 +199,7 @@ describe HyperResource::Modules::HTTP do
         hr.get
         assert false # shouldn't get here
       rescue HyperResource::ServerError => e
-        e.response.wont_be_nil
+        _(e.response).wont_be_nil
       end
     end
 
@@ -209,16 +209,16 @@ describe HyperResource::Modules::HTTP do
         hr.get
         assert false # shouldn't get here
       rescue HyperResource::ResponseError => e
-        e.response.wont_be_nil
-        e.cause.must_be_kind_of Exception
+        _(e.response).wont_be_nil
+        _(e.cause).must_be_kind_of Exception
       end
     end
 
     it 'does get_response' do
       hr = DummyAPI.new(:root => 'http://example.com/')
       root = hr.get_response
-      root.wont_be_nil
-      root.must_be_kind_of Faraday::Response
+      _(root).wont_be_nil
+      _(root).must_be_kind_of Faraday::Response
     end
   end
 end

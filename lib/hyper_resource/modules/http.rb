@@ -1,5 +1,6 @@
 require 'faraday'
 require 'uri'
+require 'cgi'
 require 'json'
 require 'digest/md5'
 
@@ -155,6 +156,7 @@ class HyperResource
         attrs ||= self.resource.attributes
         attrs = (self.resource.default_attributes || {}).merge(attrs)
         response = faraday_connection.post do |req|
+          req.headers['Content-Type'] ||= 'application/json'
           req.body = self.resource.adapter.serialize(attrs)
         end
         response
@@ -182,6 +184,7 @@ class HyperResource
         attrs ||= self.resource.attributes
         attrs = (self.resource.default_attributes || {}).merge(attrs)
         response = faraday_connection.put do |req|
+          req.headers['Content-Type'] ||= 'application/json'
           req.body = self.resource.adapter.serialize(attrs)
         end
         response
@@ -201,6 +204,7 @@ class HyperResource
         attrs ||= self.resource.attributes.changed_attributes
         attrs = (self.resource.default_attributes || {}).merge(attrs)
         response = faraday_connection.patch do |req|
+          req.headers['Content-Type'] ||= 'application/json'
           req.body = self.resource.adapter.serialize(attrs)
         end
         response
@@ -227,22 +231,27 @@ class HyperResource
         url ||= self.url
         headers = (rsrc.headers_for_url(url) || {}).merge(self.headers)
         auth = rsrc.auth_for_url(url) || {}
+        fo = rsrc.faraday_options_for_url(url) || {}
 
         key = ::Digest::MD5.hexdigest({
           'faraday_connection' => {
             'url' => url,
             'headers' => headers,
-            'ba' => auth[:basic]
+            'ba' => auth[:basic],
+            'fo' => fo
           }
         }.to_json)
         return Thread.current[key] if Thread.current[key]
 
-        fo = rsrc.faraday_options_for_url(url) || {}
         fc = Faraday.new(fo.merge(:url => url))
         fc.headers.merge!('User-Agent' => rsrc.user_agent)
         fc.headers.merge!(headers)
         if ba=auth[:basic]
-          fc.basic_auth(*ba)
+          if fc.respond_to?(:basic_auth)
+            fc.basic_auth(*ba)
+          else
+            fc.request :authorization, :basic, *ba
+          end
         end
         Thread.current[key] = fc
       end

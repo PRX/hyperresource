@@ -11,12 +11,12 @@ describe HyperResource::Attributes do
     end
 
     it "provides access to all attributes" do
-      @attrs.attr1.must_equal 'val1'
-      @attrs.attr2.must_equal 'val2'
+      _(@attrs.attr1).must_equal 'val1'
+      _(@attrs.attr2).must_equal 'val2'
     end
 
     it 'supports null attributes' do
-      @attrs.attr3.must_equal nil
+      _(@attrs.attr3).must_be_nil
     end
 
     it 'leaves _links and _embedded alone' do
@@ -30,7 +30,7 @@ describe HyperResource::Attributes do
 
     it 'allows values to be changed' do
       @attrs.attr1 = :foo
-      @attrs.attr1.must_equal :foo
+      _(@attrs.attr1).must_equal :foo
     end
   end
 
@@ -41,12 +41,12 @@ describe HyperResource::Attributes do
     end
 
     it 'marks attributes as changed' do
-      @rsrc.changed?(:attr1).must_equal false
-      @rsrc.changed?.must_equal false
+      _(@rsrc.changed?(:attr1)).must_equal false
+      _(@rsrc.changed?).must_equal false
       @rsrc.attr1 = :wowie_zowie
-      @rsrc.changed?(:attr1).must_equal true
-      @rsrc.changed?(:attr2).must_equal false
-      @rsrc.changed?.must_equal true
+      _(@rsrc.changed?(:attr1)).must_equal true
+      _(@rsrc.changed?(:attr2)).must_equal false
+      _(@rsrc.changed?).must_equal true
     end
   end
 

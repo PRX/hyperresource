@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 require 'minitest/pride'
-require 'mocha/setup'
+require 'mocha/minitest'
 #require 'debugger'
 require 'hyperresource'
 

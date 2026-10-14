@@ -10,21 +10,21 @@ describe HyperResource do
 
   describe 'respond_to' do
     it "doesn't create methods" do
-      @api.methods.wont_include(:attr1)
-      @api.attributes.methods.wont_include(:attr1)
-      @api.methods.wont_include(:obj1s)
-      @api.objects.methods.wont_include(:obj1s)
-      @api.methods.wont_include(:foobars)
-      @api.links.methods.wont_include(:foobars)
+      _(@api.methods).wont_include(:attr1)
+      _(@api.attributes.methods).wont_include(:attr1)
+      _(@api.methods).wont_include(:obj1s)
+      _(@api.objects.methods).wont_include(:obj1s)
+      _(@api.methods).wont_include(:foobars)
+      _(@api.links.methods).wont_include(:foobars)
     end
 
     it "responds_to the right things" do
-      @api.must_respond_to(:attr1)
-      @api.attributes.must_respond_to(:attr1)
-      @api.must_respond_to(:obj1s)
-      @api.objects.must_respond_to(:obj1s)
-      @api.must_respond_to(:foobars)
-      @api.links.must_respond_to(:foobars)
+      _(@api).must_respond_to(:attr1)
+      _(@api.attributes).must_respond_to(:attr1)
+      _(@api).must_respond_to(:obj1s)
+      _(@api.objects).must_respond_to(:obj1s)
+      _(@api).must_respond_to(:foobars)
+      _(@api.links).must_respond_to(:foobars)
     end
   end
 end

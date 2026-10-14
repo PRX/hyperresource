@@ -1,4 +1,4 @@
-# HyperResource [![Build Status](https://travis-ci.org/gamache/hyperresource.png?branch=master)](https://travis-ci.org/gamache/hyperresource)
+# HyperResource
 
 HyperResource is a Ruby client library for hypermedia web services.
 
@@ -217,9 +217,11 @@ root_two.url       # => ‘http://localhost:23456’
 root_two.namespace # => ServerTwoAPI
 ```
 
-Fuzzy matching of URL masks is provided by the
-[FuzzyURL](https://github.com/gamache/fuzzyurl/) gem; check there for
-full documentation of URL mask syntax.
+URL masks are matched by HyperResource itself; it no longer uses the
+[FuzzyURL](https://github.com/gamache/fuzzyurl/) gem.  A mask may include a
+protocol, hostname, and port, e.g. `https://api.example.com:8080`,
+`api.example.com`, `*.example.com`, or `*`.  Omitted parts match anything,
+and more specific masks take priority.
 
 ## Error Handling
 

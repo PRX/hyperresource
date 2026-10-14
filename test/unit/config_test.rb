@@ -13,8 +13,8 @@ describe HyperResource do
                                     :body => {})
       res2.config('res2' => {'test2' => 234})
 
-      res2.config.get('res2', 'test2').must_equal 234
-      res2.config.get('res1', 'test1').must_equal 123
+      _(res2.config.get('res2', 'test2')).must_equal 234
+      _(res2.config.get('res1', 'test1')).must_equal 123
     end
 
     it 'merges the config attribute hashes on the same mask, non-hash values' do
@@ -28,8 +28,8 @@ describe HyperResource do
                                     :body => {})
       res2.config('res1' => {'test2' => 234})
 
-      res2.config.get('res1', 'test2').must_equal 234
-      res2.config.get('res1', 'test1').must_equal 123
+      _(res2.config.get('res1', 'test2')).must_equal 234
+      _(res2.config.get('res1', 'test1')).must_equal 123
     end
 
     it 'merges the config attribute hashes on the same mask, hash values' do
@@ -42,8 +42,18 @@ describe HyperResource do
                                     :body => {})
       res2.config('res1' => {'test1' => {'a' => 'test'}})
 
-      res2.config.get('res1', 'test1')['a'].must_equal 'test'
-      res2.config.get('res1', 'test1')['c'].must_equal 'd'
+      _(res2.config.get('res1', 'test1')['a']).must_equal 'test'
+      _(res2.config.get('res1', 'test1')['c']).must_equal 'd'
+    end
+
+    it 'prefers headers from more specific masks' do
+      res = HyperResource.new(:root => 'http://example.com/',
+                              :headers => {'X-Test' => 'specific'})
+      res.config('*' => {'headers' => {'X-Test' => 'wildcard',
+                                       'X-Other' => 'wildcard'}})
+
+      _(res.headers['X-Test']).must_equal 'specific'
+      _(res.headers['X-Other']).must_equal 'wildcard'
     end
 
   end

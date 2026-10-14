@@ -86,14 +86,21 @@ class HyperResource
     ## Sets a key and value pair, using the given URL as the basis of the
     ## hostmask.  Path, query, and fragment are ignored.
     def set_for_url(url, key, value)
-      set(URI.parse(url || "").host, key, value)
+      set(url ? mask_for_url(url) : '*', key, value)
     end
 
 
-    ## Returns hostmasks from our config which match the given url.
+    ## Returns hostmasks from our config which match the given url, sorted
+    ## best match first.
     def matching_masks_for_url(url)
-      host = URI.parse(url || "").host
-      cfg.keys & ["*", host]
+      return ['*'] if cfg.keys.count == 1
+      url_parts = parse_url(url.to_s)
+      scores = {}
+      cfg.keys.each do |mask|
+        score = match_mask(parse_url(mask), url_parts)
+        scores[mask] = score if score
+      end
+      scores.keys.sort_by {|k| [-scores[k], -k.length]}
     end
 
   private
@@ -124,6 +131,69 @@ class HyperResource
       matching_masks_for_url(url).inject({}) do |subcfg, mask|
         (cfg[mask] || {}).merge(subcfg)
       end
+    end
+
+    URL_PATTERN = %r{\A(?:(\*|[a-z][a-z0-9+.-]*)://)?(?:[^@/]*@)?([a-z0-9.*-]*)(?::(\*|\d+))?}i
+
+    DEFAULT_PORTS = {'http' => '80', 'https' => '443'}
+
+    ## Returns the protocol, host, and port of a URL or hostmask.
+    def parse_url(url)
+      m = url.match(URL_PATTERN)
+      {:protocol => m[1] && m[1].downcase, :host => m[2].downcase, :port => m[3]}
+    end
+
+    ## Returns the hostmask for a URL, without path, query, or fragment.
+    def mask_for_url(url)
+      parts = parse_url(url.to_s)
+      mask = parts[:host]
+      mask = "#{parts[:protocol]}://#{mask}" if parts[:protocol]
+      mask = "#{mask}:#{parts[:port]}" if parts[:port]
+      mask
+    end
+
+    ## Returns nil if the mask does not match the url, or a score which is
+    ## higher for more specific matches.
+    def match_mask(mask, url)
+      host_score = match_hosts(mask[:host], url[:host])
+      port_score = match_protocols_and_ports(mask, url)
+      host_score + port_score if host_score && port_score
+    end
+
+    ## Returns nil for no match, 0 for a wildcard match, or 1 for an exact
+    ## match.
+    def match_hosts(mask, host)
+      mask_pieces = mask.split('.').reverse
+      host_pieces = host.split('.').reverse
+      return 1 if !mask.empty? && mask_pieces == host_pieces
+      return nil if mask_pieces.count > host_pieces.count
+      host_pieces.each_with_index do |piece, i|
+        return 0 if mask_pieces[i] == '*'
+        return nil if mask_pieces[i] != piece
+      end
+      0
+    end
+
+    ## Returns nil for no match, or 0-2 for the number of exact matches.
+    ## Protocol defaults to http, and a port matches its protocol's default.
+    def match_protocols_and_ports(mask, url)
+      wildcards = 0
+      protocol = url[:protocol] || 'http'
+      if mask[:protocol] && mask[:protocol] != '*'
+        return nil if mask[:protocol] != protocol
+      else
+        wildcards += 1
+      end
+
+      if !mask[:port] || mask[:port] == '*'
+        wildcards += 1
+      elsif !url[:port] && DEFAULT_PORTS[protocol] == mask[:port]
+        wildcards += 1
+      elsif mask[:port] != url[:port]
+        return nil
+      end
+
+      2 - wildcards
     end
 
     ## Returns the hostmasks which match the given url, sorted best match

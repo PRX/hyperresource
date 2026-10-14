@@ -1,5 +1,6 @@
 require 'test_helper'
-require 'sinatra'
+require 'sinatra/base'
+require 'rackup'
 require 'json'
 require File.expand_path('../two_test_servers.rb', __FILE__)
 
@@ -17,7 +18,7 @@ launched_servers = false
 server_one = nil
 server_two = nil
 
-MiniTest.after_run do
+Minitest.after_run do
   server_one.kill
   server_two.kill
 end
@@ -27,7 +28,7 @@ describe 'APIEcosystem' do
   before do
     unless launched_servers
       server_one = Thread.new do
-        Rack::Handler::WEBrick.run(
+        Rackup::Handler::WEBrick.run(
           ServerOne.new,
           :Port => PORT_ONE.to_i,
           :AccessLog => [],
@@ -35,7 +36,7 @@ describe 'APIEcosystem' do
         )
       end
       server_two = Thread.new do
-        Rack::Handler::WEBrick.run(
+        Rackup::Handler::WEBrick.run(
           ServerTwo.new,
           :Port => PORT_TWO.to_i,
           :AccessLog => [],
@@ -86,26 +87,26 @@ describe 'APIEcosystem' do
 
     it 'uses the right config for server one' do
       root_one = APIEcosystem.new(:root => "http://localhost:#{PORT_ONE}").get
-      root_one.class.to_s.must_equal 'ServerOneAPI'
-      root_one.sent_params.must_equal({"server" => "1"})
-      root_one.headers['X-Server'].must_equal "1"
-      root_one.auth.must_equal({:basic => ["server_one", ""]})
-      root_one.faraday_options.must_equal({:request => {:timeout => 1}})
+      _(root_one.class.to_s).must_equal 'ServerOneAPI'
+      _(root_one.sent_params).must_equal({"server" => "1"})
+      _(root_one.headers['X-Server']).must_equal "1"
+      _(root_one.auth).must_equal({:basic => ["server_one", ""]})
+      _(root_one.faraday_options).must_equal({:request => {:timeout => 1}})
     end
 
     it 'uses the right config for server two' do
       root_two = APIEcosystem.new(:root => "http://localhost:#{PORT_TWO}").get
-      root_two.class.to_s.must_equal 'ServerTwoAPI'
-      root_two.sent_params.must_equal({"server" => "2"})
-      root_two.headers['X-Server'].must_equal "2"
-      root_two.auth.must_equal({:basic => ["server_two", ""]})
-      root_two.faraday_options.must_equal({:request => {:timeout => 2}})
+      _(root_two.class.to_s).must_equal 'ServerTwoAPI'
+      _(root_two.sent_params).must_equal({"server" => "2"})
+      _(root_two.headers['X-Server']).must_equal "2"
+      _(root_two.auth).must_equal({:basic => ["server_two", ""]})
+      _(root_two.faraday_options).must_equal({:request => {:timeout => 2}})
     end
 
     it 'can go back and forth' do
       root_one = APIEcosystem.new(:root => "http://localhost:#{PORT_ONE}").get
       root_two = root_one.server_two.server_one.server_two.get
-      root_two.class.to_s.must_equal 'ServerTwoAPI'
+      _(root_two.class.to_s).must_equal 'ServerTwoAPI'
     end
 
   end

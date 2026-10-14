@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require 'sinatra'
+require 'sinatra/base'
 require 'json'
 
 class LiveTestServer < Sinatra::Base
