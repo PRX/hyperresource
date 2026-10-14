@@ -49,8 +49,8 @@ class HyperResource
       ## This is done by merging all applicable header configs.
       def headers
         matching_masks = hr_config.matching_masks_for_url(url)
-        matching_masks.reverse.inject({}) do |hash, mask|
-          hash.merge(hr_config.get(mask, "headers") || {})
+        matching_masks.inject({}) do |hash, mask|
+          (hr_config.get(mask, "headers") || {}).merge(hash)
         end
       end
 
