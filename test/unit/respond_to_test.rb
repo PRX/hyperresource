@@ -1,14 +1,14 @@
-require 'test_helper'
+require "test_helper"
 
 describe HyperResource do
   class NoMethodsAPI < HyperResource; end
 
   before do
-    @api = NoMethodsAPI.new(:root => 'http://example.com')
+    @api = NoMethodsAPI.new(root: "http://example.com")
     @api.adapter.apply(HAL_BODY, @api)
   end
 
-  describe 'respond_to' do
+  describe "respond_to" do
     it "doesn't create methods" do
       _(@api.methods).wont_include(:attr1)
       _(@api.attributes.methods).wont_include(:attr1)

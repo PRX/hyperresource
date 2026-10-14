@@ -1,5 +1,4 @@
 class HyperResource
-
   ## HyperResource::Links is a modified Hash that permits lookup
   ## of a link by its link relation (rel), or an abbreviation thereof.
   ## It also provides read access through `method_missing`.
@@ -9,9 +8,8 @@ class HyperResource
   ## by any of `self.widgets`, `self['widgets']`, `self[:widgets]`, and
   ## `self['someapi:widgets'].
   class Links < Hash
-
     # @private
-    def initialize(resource=nil)
+    def initialize(resource = nil)
       ## We used to store the resource, but we didn't need to.  Now we don't.
     end
 
@@ -25,12 +23,12 @@ class HyperResource
 
       ## Extract 'foo' from e.g. 'http://example.com/foo',
       ## 'http://example.com/url#foo', 'somecurie:foo'.
-      if m=rel.match(%r{[:/#](.+)})
+      if m = rel.match(%r{[:/#](.+)})
         names << m[1]
       end
 
       ## Underscore all non-word characters.
-      underscored_names = names.map{|n| n.gsub(/[^a-zA-Z_]/, '_')}
+      underscored_names = names.map { |n| n.gsub(/[^a-zA-Z_]/, "_") }
       names = (names + underscored_names).uniq
 
       ## Register this link under every name we've come up with.
@@ -49,7 +47,7 @@ class HyperResource
     # @private
     def method_missing(method, *args)
       unless self[method]
-        raise NoMethodError, "undefined method `#{method}' for #{self.inspect}"
+        raise NoMethodError, "undefined method `#{method}' for #{inspect}"
       end
 
       if args.count > 0
@@ -61,9 +59,8 @@ class HyperResource
 
     # @private
     def respond_to?(method, *args)
-      return true if self.has_key?(method.to_s)
+      return true if has_key?(method.to_s)
       super
     end
   end
 end
-

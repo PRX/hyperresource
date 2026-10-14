@@ -4,7 +4,7 @@ class HyperResource
     attr_accessor :cause
 
     # @private
-    def initialize(message, attrs={})
+    def initialize(message, attrs = {})
       self.cause = attrs[:cause]
       super(message)
     end
@@ -19,24 +19,23 @@ class HyperResource
     attr_accessor :body
 
     # @private
-    def initialize(message, attrs={})
+    def initialize(message, attrs = {})
       self.response = attrs[:response]
       self.body = attrs[:body]
 
       ## Try to help out with the message
-      if self.body
-        if error = self.body['error']
+      if body
+        if error = body["error"]
           message = "#{message} (#{error})"
         end
-      elsif self.response
-        message = "#{message} (\"#{self.response.inspect}\")"
+      elsif response
+        message = "#{message} (\"#{response.inspect}\")"
       end
 
-      super(message, attrs)
+      super
     end
   end
 
   class ClientError < ResponseError; end
   class ServerError < ResponseError; end
 end
-
