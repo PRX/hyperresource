@@ -221,7 +221,9 @@ URL masks are matched by HyperResource itself; it no longer uses the
 [FuzzyURL](https://github.com/gamache/fuzzyurl/) gem.  A mask may include a
 protocol, hostname, and port, e.g. `https://api.example.com:8080`,
 `api.example.com`, `*.example.com`, or `*`.  Omitted parts match anything,
-and more specific masks take priority.
+and more specific masks take priority.  A URL without a protocol is treated
+as `https`, so it matches `https://` and `:443` masks, but not `http://` or
+`:80` masks.
 
 ## Error Handling
 
