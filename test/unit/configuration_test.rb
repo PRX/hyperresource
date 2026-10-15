@@ -137,6 +137,19 @@ describe HyperResource::Configuration do
       _(cfg.get_for_url('http://example.com:9090', 'd')).must_equal 'any port'
     end
 
+    it 'defaults to https when the url has no protocol' do
+      cfg = HyperResource::Configuration.new
+      cfg.set('https://example.com', 'a', 'https')
+      cfg.set('http://example.com', 'b', 'http')
+      cfg.set('example.com:443', 'c', '443')
+      cfg.set('example.com:80', 'd', '80')
+
+      _(cfg.get_for_url('example.com/x', 'a')).must_equal 'https'
+      _(cfg.get_for_url('example.com/x', 'b')).must_be_nil
+      _(cfg.get_for_url('example.com/x', 'c')).must_equal '443'
+      _(cfg.get_for_url('example.com/x', 'd')).must_be_nil
+    end
+
     it 'ignores case and credentials' do
       cfg = HyperResource::Configuration.new
       cfg.set('EXAMPLE.com', 'a', 'b')
@@ -150,9 +163,9 @@ describe HyperResource::Configuration do
   describe '#set_for_url' do
     it 'works' do
       cfg = HyperResource::Configuration.new
-      cfg.set_for_url('http://example.com', 'a', 'b')
+      cfg.set_for_url('https://example.com', 'a', 'b')
       _(cfg.get_for_url('example.com', 'a')).must_equal 'b'
-      _(cfg.get('http://example.com', 'a')).must_equal 'b'
+      _(cfg.get('https://example.com', 'a')).must_equal 'b'
     end
 
     it 'keeps protocol and port, and drops path, query, and credentials' do
@@ -172,7 +185,7 @@ describe HyperResource::Configuration do
     it 'generates correct hostmasks' do
       cfg = HyperResource::Configuration.new
       masks = cfg.send(:get_possible_masks_for_host, 'www4.us.example.com')
-      _(masks).must_equal ["www4.us.example.com:80",
+      _(masks).must_equal ["www4.us.example.com:443",
                         "www4.us.example.com",
                         "*.us.example.com",
                         "*.example.com",
