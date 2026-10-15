@@ -1,8 +1,7 @@
-require 'uri_template'
-require 'hyper_resource/modules/http'
+require "uri_template"
+require "hyper_resource/modules/http"
 
 class HyperResource
-
   ## HyperResource::Link is an object to represent a hyperlink and its
   ## URL or body parameters, and to encapsulate HTTP calls involving this
   ## link.  Links are typically created by HyperResource, not by end users.
@@ -17,7 +16,6 @@ class HyperResource
   ## always accessed through the resource object.
 
   class Link
-
     include HyperResource::Modules::HTTP
 
     ## The literal href of this link; may be templated.
@@ -42,52 +40,50 @@ class HyperResource
     ## hash.  `link_spec` keys are: `href` (string, required), `templated`
     ## (boolean), `params` (hash), and `default_method` (string, default
     ## `"get"`).
-    def initialize(resource, link_spec={})
-      unless link_spec.kind_of?(Hash)
+    def initialize(resource, link_spec = {})
+      unless link_spec.is_a?(Hash)
         raise ArgumentError, "link_spec must be a Hash (got #{link_spec.inspect})"
       end
-      link_spec = Hash[ link_spec.map{|(k,v)| [k.to_s, v]} ] ## stringify keys
+      link_spec = link_spec.map { |(k, v)| [k.to_s, v] }.to_h ## stringify keys
 
       self.resource = resource
-      self.base_href = link_spec['href']
-      self.name = link_spec['name']
-      self.templated = !!link_spec['templated']
-      self.params = link_spec['params'] || {}
-      self.default_method = link_spec['method'] || 'get'
-      @headers = link_spec['headers'] || {}
+      self.base_href = link_spec["href"]
+      self.name = link_spec["name"]
+      self.templated = !!link_spec["templated"]
+      self.params = link_spec["params"] || {}
+      self.default_method = link_spec["method"] || "get"
+      @headers = link_spec["headers"] || {}
     end
 
     ## Returns this link's href, applying any URI template params.
     def href
-      if self.templated
-        filtered_params = self.resource.outgoing_uri_filter(params)
-        URITemplate.new(self.base_href).expand(filtered_params)
+      if templated
+        filtered_params = resource.outgoing_uri_filter(params)
+        URITemplate.new(base_href).expand(filtered_params)
       else
-        self.base_href
+        base_href
       end
     end
 
     ## Returns this link's fully resolved URL, or nil if `resource.root`
     ## or `href` are malformed.
     def url
-      begin
-        URI.join(self.resource.root, self.href.to_s).to_s
-      rescue StandardError
-        nil
-      end
+      URI.join(resource.root, href.to_s).to_s
+    rescue
+      nil
     end
 
     ## Returns a new scope with the given params; that is, returns a copy of
     ## itself with the given params applied.
     def where(params)
-      params = Hash[ params.map{|(k,v)| [k.to_s, v]} ]
-      self.class.new(self.resource,
-                     'href' => self.base_href,
-                     'name' => self.name,
-                     'templated' => self.templated,
-                     'params' => self.params.merge(params),
-                     'method' => self.default_method,
-                     'headers' => @headers)
+      params = params.map { |(k, v)| [k.to_s, v] }.to_h
+      self.class.new(resource,
+        "href" => base_href,
+        "name" => name,
+        "templated" => templated,
+        "params" => self.params.merge(params),
+        "method" => default_method,
+        "headers" => @headers)
     end
 
     ## When called with a hash, returns a new scope with the given headers;
@@ -99,13 +95,13 @@ class HyperResource
       if args.count == 0
         @headers
       else
-        self.class.new(self.resource,
-                       'href' => self.base_href,
-                       'name' => self.name,
-                       'templated' => self.templated,
-                       'params' => self.params,
-                       'method' => self.default_method,
-                       'headers' => @headers.merge(args[0]))
+        self.class.new(resource,
+          "href" => base_href,
+          "name" => name,
+          "templated" => templated,
+          "params" => params,
+          "method" => default_method,
+          "headers" => @headers.merge(args[0]))
 
       end
     end
@@ -113,10 +109,8 @@ class HyperResource
     ## Unrecognized methods invoke an implicit load of the resource pointed
     ## to by this link.  The method call is then repeated on the returned
     ## resource.
-    def method_missing(method, *args)
-      self.send(default_method || :get).send(method, *args)
+    def method_missing(method, *args) # standard:disable Style/MissingRespondToMissing
+      send(default_method || :get).send(method, *args)
     end
-
   end
 end
-

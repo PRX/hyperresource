@@ -1,2 +1,1 @@
-require 'hyper_resource'
-
+require "hyper_resource"

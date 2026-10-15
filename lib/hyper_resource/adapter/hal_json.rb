@@ -1,16 +1,14 @@
-require 'rubygems' if RUBY_VERSION[0..2] == '1.8'
-require 'json'
+require "rubygems" if RUBY_VERSION[0..2] == "1.8"
+require "json"
 
 class HyperResource
   class Adapter
-
     ## HyperResource::Adapter::HAL_JSON provides support for the HAL+JSON
     ## hypermedia format by implementing the interface defined in
     ## HyperResource::Adapter.
 
-    class HAL_JSON < Adapter
+    class HAL_JSON < Adapter # standard:disable Naming/ClassAndModuleCamelCase
       class << self
-
         def serialize(object)
           JSON.dump(object)
         end
@@ -19,11 +17,11 @@ class HyperResource
           JSON.parse(string)
         end
 
-        def apply(response, resource, opts={})
-          if !response.kind_of?(Hash)
+        def apply(response, resource, opts = {})
+          if !response.is_a?(Hash)
             raise ArgumentError, "'response' argument must be a Hash (got #{response.inspect})"
           end
-          if !resource.kind_of?(HyperResource)
+          if !resource.is_a?(HyperResource)
             raise ArgumentError, "'resource' argument must be a HyperResource (got #{resource.inspect})"
           end
 
@@ -31,48 +29,58 @@ class HyperResource
           apply_links(response, resource)
           apply_attributes(response, resource)
           resource.loaded = true
-          new_href =  response['_links']['self']['href'] rescue nil
+          new_href = begin
+            response["_links"]["self"]["href"]
+          rescue
+            nil
+          end
           resource.href = new_href unless new_href.nil? && resource.href
           resource
         end
 
-
-      private
+        private
 
         def apply_objects(resp, rsrc)
-          return unless resp['_embedded']
+          return unless resp["_embedded"]
           objs = rsrc.objects
 
-          resp['_embedded'].each do |name, collection|
+          resp["_embedded"].each do |name, collection|
             if collection.is_a? Hash
-              href = collection['_links']['self']['href'] rescue nil
+              href = begin
+                collection["_links"]["self"]["href"]
+              rescue
+                nil
+              end
               objs[name] =
-                rsrc.new_from(:resource => rsrc,
-                              :body => collection,
-                              :href => href)
+                rsrc.new_from(resource: rsrc,
+                  body: collection,
+                  href: href)
             else
               objs[name] = collection.map do |obj|
-                href = obj['_links']['self']['href'] rescue nil
-                rsrc.new_from(:resource => rsrc,
-                              :body => obj,
-                              :href => href)
+                href = begin
+                  obj["_links"]["self"]["href"]
+                rescue
+                  nil
+                end
+                rsrc.new_from(resource: rsrc,
+                  body: obj,
+                  href: href)
               end
             end
           end
         end
 
-
         def apply_links(resp, rsrc)
-          return unless resp['_links']
+          return unless resp["_links"]
           links = rsrc.links
 
-          resp['_links'].each do |rel, link_spec|
-            if link_spec.is_a? Array
-              links[rel] = link_spec.map do |link|
+          resp["_links"].each do |rel, link_spec|
+            links[rel] = if link_spec.is_a? Array
+              link_spec.map do |link|
                 new_link_from_spec(rsrc, link)
               end
             else
-              links[rel] = new_link_from_spec(rsrc, link_spec)
+              new_link_from_spec(rsrc, link_spec)
             end
           end
         end
@@ -81,9 +89,8 @@ class HyperResource
           resource.class::Link.new(resource, link_spec)
         end
 
-
         def apply_attributes(resp, rsrc)
-          given_attrs = resp.reject{|k,v| %w(_links _embedded).include?(k)}
+          given_attrs = resp.except("_links", "_embedded")
           filtered_attrs = rsrc.incoming_body_filter(given_attrs)
 
           filtered_attrs.keys.each do |attr|
@@ -92,9 +99,7 @@ class HyperResource
 
           rsrc.attributes._hr_clear_changed
         end
-
       end
     end
   end
 end
-

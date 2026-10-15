@@ -1,12 +1,12 @@
-require 'json'
+require "json"
 
-PORT_ONE = ENV['TEST_PORT_ONE'] || 42774
-PORT_TWO = ENV['TEST_PORT_TWO'] || 42775
+PORT_ONE = ENV["TEST_PORT_ONE"] || 42774
+PORT_TWO = ENV["TEST_PORT_TWO"] || 42775
 
 class ServerOne < Sinatra::Base
-  get '/' do
-    params = request.env['rack.request.query_hash']
-    headers['Content-Type'] = 'application/hal+json'
+  get "/" do
+    params = request.env["rack.request.query_hash"]
+    headers["Content-Type"] = "application/hal+json"
     <<-EOT
       { "name": "Server One",
         "sent_params": #{JSON.dump(params)},
@@ -20,9 +20,9 @@ class ServerOne < Sinatra::Base
 end
 
 class ServerTwo < Sinatra::Base
-  get '/' do
-    params = request.env['rack.request.query_hash']
-    headers['Content-Type'] = 'application/hal+json'
+  get "/" do
+    params = request.env["rack.request.query_hash"]
+    headers["Content-Type"] = "application/hal+json"
     <<-EOT
       { "name": "Server Two",
         "sent_params": #{JSON.dump(params)},
@@ -34,4 +34,3 @@ class ServerTwo < Sinatra::Base
     EOT
   end
 end
-

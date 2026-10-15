@@ -1,7 +1,6 @@
 class HyperResource
   module Modules
     module DataType
-
       def self.included(klass)
         klass.extend(ClassMethods)
       end
@@ -17,7 +16,6 @@ class HyperResource
       end
 
       module ClassMethods
-
         ## Returns the class into which a given response should be
         ## instantiated.  Class name is a combination of `resource.namespace`
         ## and `get_data_type(args)'.  Creates this class if necessary.
@@ -31,11 +29,15 @@ class HyperResource
 
           ## Make sure namespace class exists
           namespace_str = sanitize_class_name(namespace.to_s)
-          if namespace.kind_of?(String)
-            ns_class = eval(namespace_str) rescue nil
+          if namespace.is_a?(String)
+            ns_class = begin
+              eval(namespace_str) # standard:disable Security/Eval
+            rescue
+              nil
+            end
             if !ns_class
-              Object.module_eval("class #{namespace_str} < #{self}; end")
-              ns_class = eval(namespace_str)
+              Object.module_eval("class #{namespace_str} < #{self}; end", __FILE__, __LINE__)
+              ns_class = eval(namespace_str) # standard:disable Security/Eval
             end
           end
 
@@ -44,21 +46,21 @@ class HyperResource
           return ns_class unless type
 
           ## Make sure data type class exists
-          type = type[0,1].upcase + type[1..-1]  ## capitalize
+          type = type[0, 1].upcase + type[1..]  ## capitalize
           sanitized_type = sanitize_class_name(type)
           data_type_str = "#{namespace_str}::#{sanitized_type}"
           unless ns_class.constants.include?(sanitized_type.to_sym)
-            Object.module_eval("class #{data_type_str} < #{namespace_str}; end")
+            Object.module_eval("class #{data_type_str} < #{namespace_str}; end", __FILE__, __LINE__)
           end
-          eval(data_type_str)
+          eval(data_type_str) # standard:disable Security/Eval
         end
 
         ## Given a body Hash and a response Faraday::Response, detect and
         ## return a string describing this response's data type.
         ## Args are :body and :response.
         def get_data_type(args)
-          type = get_data_type_from_body(args[:body])
-          type ||= get_data_type_from_response(args[:response])
+          get_data_type_from_body(args[:body]) ||
+            get_data_type_from_response(args[:response])
         end
 
         ## Given a Faraday::Response, inspects the Content-type for data
@@ -69,8 +71,8 @@ class HyperResource
         ## Returns nil on failure.
         def get_data_type_from_response(response)
           return nil unless response
-          return nil unless content_type = response['content-type']
-          return nil unless m=content_type.match(/;\s* type=([0-9A-Za-z:]+)/x)
+          return nil unless (content_type = response["content-type"])
+          return nil unless (m = content_type.match(/;\s* type=([0-9A-Za-z:]+)/x))
           m[1]
         end
 
@@ -79,18 +81,16 @@ class HyperResource
         ## response.  Override this method to change behavior.
         def get_data_type_from_body(body)
           return nil unless body
-          body['_data_type'] || body['type']
+          body["_data_type"] || body["type"]
         end
 
-      private
+        private
 
         ## Remove all non-word, non-colon elements from a class name.
         def sanitize_class_name(name)
-          name.gsub(/[^_0-9A-Za-z:]/, '')
+          name.gsub(/[^_0-9A-Za-z:]/, "")
         end
-
       end
-
     end
   end
 end

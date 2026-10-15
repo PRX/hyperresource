@@ -1,6 +1,5 @@
 module HyperResource::Modules
   module InternalAttributes
-
     def self.included(base)
       base.extend(ClassMethods)
 
@@ -9,24 +8,24 @@ module HyperResource::Modules
       end
 
       (base._hr_attributes - base._hr_class_attributes).each do |attr|
-         base.send(:attr_accessor, attr)
+        base.send(:attr_accessor, attr)
       end
 
       ## Fallback attributes fall back from instance to class.
       (base._hr_attributes & base._hr_class_attributes).each do |attr|
-         base._hr_fallback_attribute attr
+        base._hr_fallback_attribute attr
       end
     end
 
     module ClassMethods
       # @private
       def _hr_class_attributes
-        [ :root ]
+        [:root]
       end
 
       # @private
       def _hr_attributes
-        [ :root,
+        [:root,
           :href,
           :request,
           :response,
@@ -34,15 +33,14 @@ module HyperResource::Modules
           :attributes,
           :links,
           :objects,
-          :loaded
-        ]
+          :loaded]
       end
 
       ## Inheritable class attribute, kinda like in Rails.
       # @private
       def _hr_class_attribute(*names)
         names.map(&:to_sym).each do |name|
-          instance_eval <<-EOT
+          instance_eval <<-EOT, __FILE__, __LINE__ + 1
             def #{name}=(val)
               @#{name} = val
             end
@@ -59,7 +57,7 @@ module HyperResource::Modules
       # @private
       def _hr_fallback_attribute(*names)
         names.map(&:to_sym).each do |name|
-          class_eval <<-EOT
+          class_eval <<-EOT, __FILE__, __LINE__ + 1
             def #{name}=(val)
               @#{name} = val
             end
@@ -71,9 +69,6 @@ module HyperResource::Modules
           EOT
         end
       end
-
     end # ClassMethods
-
   end
 end
-

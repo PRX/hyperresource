@@ -1,76 +1,70 @@
-require 'test_helper'
+require "test_helper"
 
 describe "Embedded Resources" do
-  class TestAPI < HyperResource; self.root = 'http://example.com' end
+  class TestAPI < HyperResource; self.root = "http://example.com" end
 
-  it 'supports an array of embedded resources' do
+  it "supports an array of embedded resources" do
     hyper = TestAPI.new
-    hyper.objects.class.to_s.must_equal 'TestAPI::Objects'
-    body = { "_embedded" => {
-               "foo" => [
-                 {"_links" => {"self" => {"href" => "http://example.com/"}}}
-               ]
-             }
-           }
+    _(hyper.objects.class.to_s).must_equal "TestAPI::Objects"
+    body = {"_embedded" => {
+      "foo" => [
+        {"_links" => {"self" => {"href" => "http://example.com/"}}}
+      ]
+    }}
     hyper.adapter.apply(body, hyper)
-    hyper.foo.must_be_instance_of Array
-    hyper.foo.first.href.must_equal 'http://example.com/'
+    _(hyper.foo).must_be_instance_of Array
+    _(hyper.foo.first.href).must_equal "http://example.com/"
   end
 
-  it 'supports a single embedded resource' do
+  it "supports a single embedded resource" do
     hyper = TestAPI.new
-    body = { "_embedded" => {
-               "foo" =>
+    body = {"_embedded" => {
+      "foo" =>
                  {"_links" => {"self" => {"href" => "http://example.com/"}}}
-             }
-           }
+    }}
     hyper.adapter.apply(body, hyper)
-    hyper.foo.href.must_equal 'http://example.com/'
+    _(hyper.foo.href).must_equal "http://example.com/"
   end
 
   it 'supports an array of embedded resources with no "_links" property' do
     hyper = TestAPI.new
-    body = { "_embedded" => {
-               "foo" => [
-                  {}
-               ]
-             }
-           }
+    body = {"_embedded" => {
+      "foo" => [
+        {}
+      ]
+    }}
     hyper.adapter.apply(body, hyper)
-    hyper.foo.first.href.must_be_nil
+    _(hyper.foo.first.href).must_be_nil
   end
 
   it 'supports an embedded resource with no "_links" property' do
     hyper = TestAPI.new
-    body = { "_embedded" => {
-               "foo" =>
+    body = {"_embedded" => {
+      "foo" =>
                   {}
-             }
-           }
+    }}
     hyper.adapter.apply(body, hyper)
-    hyper.foo.href.must_be_nil
+    _(hyper.foo.href).must_be_nil
   end
 
   it 'supports an array of embedded resources with no "self" link' do
     hyper = TestAPI.new
-    body = { "_embedded" => {
-               "foo" => [
-                 {"_links" => {"bar" => {"href" => "http://example.com/"}}}
-               ]
-             }
-           }
+    body = {"_embedded" => {
+      "foo" => [
+        {"_links" => {"bar" => {"href" => "http://example.com/"}}}
+      ]
+    }}
     hyper.adapter.apply(body, hyper)
-    hyper.foo.first.href.must_be_nil
+    _(hyper.foo.first.href).must_be_nil
   end
 
   it 'supports an embedded resource with no "self" link' do
     hyper = TestAPI.new
-    body = { "_embedded" => {
-               "foo" =>
+    body = {"_embedded" => {
+      "foo" =>
                  {"_links" => {"bar" => {"href" => "http://example.com/"}}}
-             }
-           }
+    }}
     hyper.adapter.apply(body, hyper)
-    hyper.foo.href.must_be_nil
+    _(hyper.foo.href).must_be_nil
   end
 end

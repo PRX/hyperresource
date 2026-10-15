@@ -1,4 +1,8 @@
-# HyperResource [![Build Status](https://travis-ci.org/gamache/hyperresource.png?branch=master)](https://travis-ci.org/gamache/hyperresource)
+# HyperResource
+
+PRX's maintained fork of
+[gamache/hyperresource](https://github.com/gamache/hyperresource), published
+as `prx_hyperresource`. See updates in the [CHANGELOG.md](CHANGELOG.md).
 
 HyperResource is a Ruby client library for hypermedia web services.
 
@@ -45,10 +49,10 @@ instead of The Road Warrior.
 
 ## Install It
 
-Nothing special is required, just: `gem install hyperresource`
+Add `gem "prx_hyperresource"` to your Gemfile, or `gem install prx_hyperresource`.
+It is loaded as `HyperResource`, and `require "hyperresource"` still works.
 
-HyperResource works on Ruby 1.8.7 to present, and JRuby in 1.8 mode or
-above.
+HyperResource requires Ruby 3.3 or later.
 
 HyperResource uses the 
 [uri_template](https://github.com/hannesg/uri_template)
@@ -217,9 +221,13 @@ root_two.url       # => ‘http://localhost:23456’
 root_two.namespace # => ServerTwoAPI
 ```
 
-Fuzzy matching of URL masks is provided by the
-[FuzzyURL](https://github.com/gamache/fuzzyurl/) gem; check there for
-full documentation of URL mask syntax.
+URL masks are matched by HyperResource itself; it no longer uses the
+[FuzzyURL](https://github.com/gamache/fuzzyurl/) gem.  A mask may include a
+protocol, hostname, and port, e.g. `https://api.example.com:8080`,
+`api.example.com`, `*.example.com`, or `*`.  Omitted parts match anything,
+and more specific masks take priority.  A URL without a protocol is treated
+as `https`, so it matches `https://` and `:443` masks, but not `http://` or
+`:80` masks.
 
 ## Error Handling
 
@@ -247,10 +255,9 @@ Many thanks to the people who've sent pull requests and improved this code:
 ## Authorship and License
 
 Copyright 2013-2015 Pete Gamache, [pete@gamache.org](mailto:pete@gamache.org).
+Fork maintained by [PRX](https://github.com/PRX) since 2025.
 
 Released under the MIT License.  See LICENSE.txt.
 
-If you got this far, you should probably follow me on Twitter.
+If you got this far, you should probably follow @gamache on Twitter.
 [@gamache](https://twitter.com/gamache)
-
-

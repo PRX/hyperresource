@@ -2,7 +2,7 @@ class HyperResource
   class Objects < Hash
     attr_accessor :_resource
 
-    def initialize(resource=nil) 
+    def initialize(resource = nil)
       self._resource = resource || HyperResource.new
     end
 
@@ -17,24 +17,24 @@ class HyperResource
     def [](key)
       case key
       when String, Symbol
-        return super(key.to_s) if self.has_key?(key.to_s)
-        return super(key.to_sym) if self.has_key?(key.to_sym)
-      when Fixnum
+        return super(key.to_s) if has_key?(key.to_s)
+        return super(key.to_sym) if has_key?(key.to_sym)
+      when Integer
         return ith(key)
       end
       nil
     end
 
     # @private
-    def method_missing(method, *args)
+    def method_missing(method, *args) # standard:disable Style/MissingRespondToMissing
       return self[method] if self[method]
-      raise NoMethodError, "undefined method `#{method}' for #{self.inspect}"
+      raise NoMethodError, "undefined method `#{method}' for #{inspect}"
     end
 
     # @private
     def respond_to?(method, *args)
       method = method.to_s
-      return true if self.has_key?(method)
+      return true if has_key?(method)
       super
     end
   end

@@ -1,62 +1,60 @@
-require 'test_helper'
+require "test_helper"
 
 describe HyperResource do
   before do
-    @rsrc = HyperResource.new(:root => 'http://example.com', :href => '/obj1/')
+    @rsrc = HyperResource.new(root: "http://example.com", href: "/obj1/")
     @rsrc.adapter.apply(HAL_BODY, @rsrc)
   end
 
-  describe 'method_missing' do
+  describe "method_missing" do
     it "uses method_missing on :attr methods" do
-      @rsrc.attr1.must_equal 'val1'
-      @rsrc.attributes.attr1.must_equal 'val1'
-      @rsrc.attr2.must_equal 'val2'
-      @rsrc.attributes.attr2.must_equal 'val2'
+      _(@rsrc.attr1).must_equal "val1"
+      _(@rsrc.attributes.attr1).must_equal "val1"
+      _(@rsrc.attr2).must_equal "val2"
+      _(@rsrc.attributes.attr2).must_equal "val2"
     end
 
-    it 'uses method_missing on :attr= methods' do
+    it "uses method_missing on :attr= methods" do
       @rsrc.attr1 = :foo
-      @rsrc.attr1.must_equal :foo
+      _(@rsrc.attr1).must_equal :foo
     end
 
-    it 'uses method_missing on :attr= methods for attributes with nil value' do
+    it "uses method_missing on :attr= methods for attributes with nil value" do
       @rsrc.attr3 = :foo
-      @rsrc.attr3.must_equal :foo
+      _(@rsrc.attr3).must_equal :foo
     end
 
-    it 'uses method_missing on :link methods' do
-      @rsrc.self.must_be_instance_of HyperResource::Link
-      @rsrc.links.self.must_be_instance_of HyperResource::Link
+    it "uses method_missing on :link methods" do
+      _(@rsrc.self).must_be_instance_of HyperResource::Link
+      _(@rsrc.links.self).must_be_instance_of HyperResource::Link
     end
 
-    it 'uses method_missing on :obj methods' do
-      @rsrc.obj1s.must_be_instance_of Array
-      @rsrc.objects.obj1s.must_be_instance_of Array
+    it "uses method_missing on :obj methods" do
+      _(@rsrc.obj1s).must_be_instance_of Array
+      _(@rsrc.objects.obj1s).must_be_instance_of Array
     end
   end
 
-  describe 'Enumerable support' do
-    it 'implements each' do
+  describe "Enumerable support" do
+    it "implements each" do
       vals = []
-      @rsrc.each {|r| vals << r.attr3}
-      vals.must_equal ['val3', 'val5']
+      @rsrc.each { |r| vals << r.attr3 }
+      _(vals).must_equal ["val3", "val5"]
     end
 
-    it 'supports []' do
-      @rsrc.first.must_equal @rsrc[0]
+    it "supports []" do
+      _(@rsrc.first).must_equal @rsrc[0]
     end
 
-    it 'supports map' do
-      @rsrc.map(&:attr3).must_equal ['val3', 'val5']
+    it "supports map" do
+      _(@rsrc.map(&:attr3)).must_equal ["val3", "val5"]
     end
   end
 
-  describe '#to_link' do
-    it 'converts into a link' do
+  describe "#to_link" do
+    it "converts into a link" do
       link = @rsrc.send :to_link
-      link.href.must_equal @rsrc.href
+      _(link.href).must_equal @rsrc.href
     end
   end
-
 end
-
