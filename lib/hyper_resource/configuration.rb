@@ -170,10 +170,10 @@ class HyperResource
     end
 
     ## Returns nil for no match, or 0-2 for the number of exact matches.
-    ## Protocol defaults to http, and a port matches its protocol's default.
+    ## Protocol defaults to https, and a port matches its protocol's default.
     def match_protocols_and_ports(mask, url)
       wildcards = 0
-      protocol = url[:protocol] || "http"
+      protocol = url[:protocol] || "https"
       if mask[:protocol] && mask[:protocol] != "*"
         return nil if mask[:protocol] != protocol
       else
@@ -193,7 +193,7 @@ class HyperResource
 
     ## Returns the hostmasks which match the given url, sorted best match
     ## first.
-    def get_possible_masks_for_host(host, port = 80, masks = nil)
+    def get_possible_masks_for_host(host, port = 443, masks = nil)
       masks ||= ["#{host}:#{port}", host]  ## exact matches first
       host_parts = host.split(".")
 
