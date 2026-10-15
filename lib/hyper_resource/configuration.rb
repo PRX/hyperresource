@@ -126,6 +126,8 @@ class HyperResource
       end
     end
 
+    ## Adapted from FuzzyURL.url_to_hash in fuzzyurl 0.2.2
+    ## (https://github.com/gamache/fuzzyurl), keeping only protocol, host, and port.
     URL_PATTERN = %r{\A(?:(\*|[a-z][a-z0-9+.-]*)://)?(?:[^@/]*@)?([a-z0-9.*-]*)(?::(\*|\d+))?}i
 
     DEFAULT_PORTS = {"http" => "80", "https" => "443"}
