@@ -1,7 +1,7 @@
 require "bundler/setup"
+require "bundler/gem_tasks"
 require "rake/testtask"
 require "standard/rake"
-require "./lib/hyper_resource/version"
 
 task default: [:test]
 
@@ -12,18 +12,6 @@ Rake::TestTask.new do |t|
     FileList["test/live/*_test.rb"]
   t.warning = !!ENV["WARNINGS"]
   t.verbose = true
-end
-
-task :release do
-  system(<<-EOT)
-    git add lib/hyper_resource/version.rb
-    git commit -m 'release v#{HyperResource::VERSION}'
-    git push origin
-    git tag v#{HyperResource::VERSION}
-    git push --tags origin
-    gem build hyper_resource.gemspec
-    gem push hyperresource-#{HyperResource::VERSION}.gem
-  EOT
 end
 
 task :test_server do

@@ -1,5 +1,9 @@
 # HyperResource
 
+PRX's maintained fork of
+[gamache/hyperresource](https://github.com/gamache/hyperresource), published
+as `prx_hyperresource`. See updates in the [CHANGELOG.md](CHANGELOG.md).
+
 HyperResource is a Ruby client library for hypermedia web services.
 
 HyperResource makes using a hypermedia API feel like calling plain old
@@ -45,10 +49,10 @@ instead of The Road Warrior.
 
 ## Install It
 
-Nothing special is required, just: `gem install hyperresource`
+Add `gem "prx_hyperresource"` to your Gemfile, or `gem install prx_hyperresource`.
+It is loaded as `HyperResource`, and `require "hyperresource"` still works.
 
-HyperResource works on Ruby 1.8.7 to present, and JRuby in 1.8 mode or
-above.
+HyperResource requires Ruby 3.3 or later.
 
 HyperResource uses the 
 [uri_template](https://github.com/hannesg/uri_template)
@@ -251,10 +255,9 @@ Many thanks to the people who've sent pull requests and improved this code:
 ## Authorship and License
 
 Copyright 2013-2015 Pete Gamache, [pete@gamache.org](mailto:pete@gamache.org).
+Fork maintained by [PRX](https://github.com/PRX) since 2025.
 
 Released under the MIT License.  See LICENSE.txt.
 
-If you got this far, you should probably follow me on Twitter.
+If you got this far, you should probably follow @gamache me on Twitter.
 [@gamache](https://twitter.com/gamache)
-
-
