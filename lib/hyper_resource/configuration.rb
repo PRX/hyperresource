@@ -190,20 +190,5 @@ class HyperResource
 
       2 - wildcards
     end
-
-    ## Returns the hostmasks which match the given url, sorted best match
-    ## first.
-    def get_possible_masks_for_host(host, port = 443, masks = nil)
-      masks ||= ["#{host}:#{port}", host]  ## exact matches first
-      host_parts = host.split(".")
-
-      if host_parts.count < 2
-        masks << "*" ## wildcard match last
-      else
-        parent_domain = host_parts[1..].join(".")
-        masks << "*." + parent_domain
-        get_possible_masks_for_host(parent_domain, port, masks)
-      end
-    end
   end
 end
