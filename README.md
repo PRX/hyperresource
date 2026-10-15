@@ -259,5 +259,5 @@ Fork maintained by [PRX](https://github.com/PRX) since 2025.
 
 Released under the MIT License.  See LICENSE.txt.
 
-If you got this far, you should probably follow @gamache me on Twitter.
+If you got this far, you should probably follow @gamache on Twitter.
 [@gamache](https://twitter.com/gamache)
