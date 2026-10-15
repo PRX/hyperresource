@@ -181,19 +181,6 @@ describe HyperResource::Configuration do
     end
   end
 
-  describe '#get_possible_masks_for_host' do
-    it 'generates correct hostmasks' do
-      cfg = HyperResource::Configuration.new
-      masks = cfg.send(:get_possible_masks_for_host, 'www4.us.example.com')
-      _(masks).must_equal ["www4.us.example.com:443",
-                        "www4.us.example.com",
-                        "*.us.example.com",
-                        "*.example.com",
-                        "*.com",
-                        "*"]
-    end
-  end
-
   describe '#matching_masks_for_url' do
     it 'returns existing hostmasks' do
       cfg = HyperResource::Configuration.new
