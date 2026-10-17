@@ -2,7 +2,6 @@ require "faraday"
 require "uri"
 require "cgi"
 require "json"
-require "digest/md5"
 
 class HyperResource
   ## Returns this resource's fully qualified URL.  Returns nil when
@@ -222,16 +221,6 @@ class HyperResource
         auth = rsrc.auth_for_url(url) || {}
         fo = rsrc.faraday_options_for_url(url) || {}
 
-        key = ::Digest::MD5.hexdigest({
-          "faraday_connection" => {
-            "url" => url,
-            "headers" => headers,
-            "ba" => auth[:basic],
-            "fo" => fo
-          }
-        }.to_json)
-        return Thread.current[key] if Thread.current[key]
-
         fc = Faraday.new(fo.merge(url: url))
         fc.headers["User-Agent"] = rsrc.user_agent
         fc.headers.merge!(headers)
@@ -242,7 +231,7 @@ class HyperResource
             fc.request :authorization, :basic, *ba
           end
         end
-        Thread.current[key] = fc
+        fc
       end
 
       ## Given a Faraday::Response object, create a new resource

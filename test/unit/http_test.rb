@@ -249,3 +249,71 @@ describe HyperResource::Modules::HTTP do
     end
   end
 end
+
+describe "HyperResource::Modules::HTTP#faraday_connection" do
+  class ConnDummyAPI < HyperResource
+    class Link < HyperResource::Link
+    end
+  end
+
+  before do
+    @requests = []
+    requests = @requests
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.get(/.*/) do |env|
+        requests << env
+        [200, {"Content-type" => "application/json"}, "{}"]
+      end
+    end
+    @builder = Faraday::RackBuilder.new { |b| b.adapter :test, stubs }
+  end
+
+  def new_resource(href, opts = {})
+    ConnDummyAPI.new({
+      root: "http://example.com/",
+      href: href,
+      faraday_options: {builder: @builder}
+    }.merge(opts))
+  end
+
+  it "does not add entries to Thread.current" do
+    ## Faraday 2 dropped Connection#basic_auth; stub it so rotating
+    ## credentials can still be exercised here.
+    Faraday::Connection.any_instance.stubs(:basic_auth)
+    new_resource("/warmup").get_response
+    keys_before = Thread.current.keys
+    50.times do |i|
+      new_resource("/items/#{i}?page=#{i}",
+        headers: {"Authorization" => "Bearer token#{i}"},
+        auth: {basic: ["user#{i}", "pass"]}).get_response
+    end
+    _(@requests.length).must_equal 51
+    _(Thread.current.keys - keys_before).must_be_empty
+  end
+
+  it "builds a new connection on every call" do
+    link = new_resource("/items/1").to_link
+    c1 = link.send(:faraday_connection)
+    c2 = link.send(:faraday_connection)
+    _(c1).wont_be_same_as c2
+  end
+
+  it "sends requests to the right URL with the right headers" do
+    new_resource("/items/1?a=b", headers: {"X-Token" => "one"}).get_response
+    new_resource("/items/2", headers: {"X-Token" => "two"}).get_response
+
+    _(@requests.length).must_equal 2
+    _(@requests[0].url.to_s).must_equal "http://example.com/items/1?a=b"
+    _(@requests[0].request_headers["X-Token"]).must_equal "one"
+    _(@requests[0].request_headers["User-Agent"]).must_equal ConnDummyAPI.new.user_agent
+    _(@requests[1].url.to_s).must_equal "http://example.com/items/2"
+    _(@requests[1].request_headers["X-Token"]).must_equal "two"
+  end
+
+  it "applies basic auth for the URL" do
+    link = new_resource("/items/1", auth: {basic: ["user", "pass"]}).to_link
+    Faraday::Connection.any_instance.expects(:basic_auth).with("user", "pass")
+    conn = link.send(:faraday_connection)
+    _(conn.url_prefix.to_s).must_equal "http://example.com/items/1"
+  end
+end
