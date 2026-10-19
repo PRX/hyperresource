@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Drop the thread-local Faraday connection cache, which leaked memory in long-running worker threads. ([#6](https://github.com/PRX/hyperresource/pull/6))
+
 ## 1.0.0
 
 First release as `prx_hyperresource`, PRX's fork of
