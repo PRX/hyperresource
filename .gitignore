@@ -1,4 +1,4 @@
-hyperresource-*.gem
+*.gem
 Gemfile.lock
 .yardoc/
 doc/
